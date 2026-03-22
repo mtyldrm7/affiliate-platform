@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}Admin Paneli – AffiliateOyun{% endblock %}
+
+{% block nav_links %}
+  <a href="/admin">Geliştiriciler</a>
+  <a href="/admin/cikis" style="color:#c0392b;">Çıkış</a>
+{% endblock %}
+
+{% block content %}
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+  <h1 style="font-size:1.6rem;">⚙️ Admin Paneli</h1>
+  <span style="color:#8080a0; font-size:.9rem;">
+    Toplam {{ developers|length }} geliştirici
+  </span>
+</div>
+
+<!-- Özet istatistikler -->
+{% set total_clicks   = developers|sum(attribute='clicks') %}
+{% set total_orders   = developers|sum(attribute='orders') %}
+{% set total_earnings = developers|sum(attribute='earnings') %}
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="value">{{ developers|length }}</div>
+    <div class="label">Toplam Geliştirici</div>
+  </div>
+  <div class="stat-card">
+    <div class="value">{{ total_clicks }}</div>
+    <div class="label">Toplam Tıklama</div>
+  </div>
+  <div class="stat-card">
+    <div class="value">{{ total_orders }}</div>
+    <div class="label">Toplam Sipariş</div>
+  </div>
+  <div class="stat-card">
+    <div class="value">{{ "%.2f"|format(total_earnings) }} ₺</div>
+    <div class="label">Toplam Komisyon</div>
+  </div>
+</div>
+
+<!-- Geliştirici tablosu -->
+<div class="card" style="padding:0; overflow:hidden;">
+  <table>
+    <thead>
+      <tr>
+        <th>Geliştirici</th>
+        <th>Oyun</th>
+        <th>E-posta</th>
+        <th>Ref Kodu</th>
+        <th>Tıklama</th>
+        <th>Sipariş</th>
+        <th>Kazanç</th>
+        <th>Kayıt</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for d in developers %}
+      <tr>
+        <td><strong>{{ d['name'] }}</strong></td>
+        <td>{{ d['game_name'] }}</td>
+        <td style="color:#8080a0;">{{ d['email'] }}</td>
+        <td>
+          <code style="background:#0f0f1a; padding:.2rem .5rem; border-radius:4px; color:#ff6b35;">
+            {{ d['ref_code'] }}
+          </code>
+        </td>
+        <td>{{ d['clicks'] }}</td>
+        <td>{{ d['orders'] }}</td>
+        <td style="color:#70e090;">{{ "%.2f"|format(d['earnings']) }} ₺</td>
+        <td style="color:#606080; font-size:.8rem;">
+          {{ d['created_at'][:10] }}
+        </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="8" style="text-align:center; color:#606080; padding:2rem;">
+          Henüz kayıtlı geliştirici yok.
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- Webhook test notu -->
+<div class="card" style="border-color:#2a2a3a; margin-top:1rem;">
+  <h2 style="color:#8080a0; font-size:1rem;">🔧 Sipariş Webhook Test</h2>
+  <p style="color:#606080; font-size:.85rem; margin-top:.5rem;">
+    Test siparişi eklemek için terminalde:
+  </p>
+  <code style="display:block; background:#0f0f1a; padding:.8rem 1rem; border-radius:6px;
+               color:#a0ffa0; font-size:.85rem; margin-top:.5rem; white-space:pre;">
+curl -X POST http://localhost:5000/webhook/siparis \
+  -H "Content-Type: application/json" \
+  -d '{"ref":"REF_KODU","order_id":"test-001","amount":150}'</code>
+</div>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Admin Girişi{% endblock %}
+
+{% block content %}
+<div style="max-width:400px; margin:0 auto;">
+  <div class="card">
+    <h2>🔐 Admin Paneli</h2>
+
+    {% if error %}
+    <div class="alert alert-error">{{ error }}</div>
+    {% endif %}
+
+    <form method="POST">
+      <div class="form-group">
+        <label>Admin Şifresi</label>
+        <input type="password" name="password" placeholder="••••••••" required>
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%;">
+        Giriş Yap
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}

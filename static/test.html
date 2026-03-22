@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Widget Test Sayfası</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #0d0d1a;
+      color: #e0e0f0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+    }
+
+    /* Sahte oyun alanı */
+    .game-area {
+      width: 480px;
+      height: 300px;
+      background: linear-gradient(135deg, #1a1a3a 0%, #0a2a1a 100%);
+      border: 2px solid #2a5a3a;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .game-area::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 40px,
+        rgba(255,255,255,.02) 40px,
+        rgba(255,255,255,.02) 80px
+      );
+    }
+    .game-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #70e090;
+      text-shadow: 0 0 20px #70e09066;
+      z-index: 1;
+    }
+    .game-score {
+      font-size: .95rem;
+      color: #8080a0;
+      z-index: 1;
+    }
+    .game-btn {
+      background: #27ae60;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: .6rem 1.6rem;
+      font-size: 1rem;
+      cursor: pointer;
+      z-index: 1;
+      transition: background .2s;
+    }
+    .game-btn:hover { background: #2ecc71; }
+
+    /* Test kontrol paneli */
+    .test-panel {
+      background: #1a1a2e;
+      border: 1px solid #ff6b3555;
+      border-radius: 12px;
+      padding: 1.2rem 1.8rem;
+      width: 480px;
+      display: flex;
+      flex-direction: column;
+      gap: .8rem;
+    }
+    .test-panel h3 {
+      font-size: .85rem;
+      color: #ff6b35;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .test-panel p {
+      font-size: .82rem;
+      color: #6060a0;
+      line-height: 1.5;
+    }
+    .btn-row { display: flex; gap: .7rem; }
+    .tbtn {
+      flex: 1;
+      padding: .55rem;
+      border: none;
+      border-radius: 7px;
+      font-size: .85rem;
+      cursor: pointer;
+      transition: opacity .2s;
+    }
+    .tbtn:hover { opacity: .8; }
+    .tbtn-show   { background: #ff6b35; color: #fff; }
+    .tbtn-reset  { background: #2a2a4a; color: #c0c0e0; border: 1px solid #3a3a6a; }
+    .status-bar {
+      font-size: .78rem;
+      color: #50507a;
+      text-align: center;
+      min-height: 1em;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sahte oyun -->
+  <div class="game-area">
+    <div class="game-title">🎮 Demo Oyun</div>
+    <div class="game-score">Oyun burada çalışmaya devam eder</div>
+    <button class="game-btn" onclick="this.textContent = this.textContent === '▶ Oyna' ? '⏸ Durdur' : '▶ Oyna'">▶ Oyna</button>
+  </div>
+
+  <!-- Test kontrol paneli -->
+  <div class="test-panel">
+    <h3>🧪 Bildirim Test Paneli</h3>
+    <p>
+      Gerçek widget saat kontrolü yapar (11:30–13:00 / 18:00–20:00).<br>
+      Butonlar o kısıtları atlayarak bildirimi anında gösterir.
+    </p>
+    <div class="btn-row">
+      <button class="tbtn tbtn-show" onclick="showNow()">Bildirimi Göster</button>
+      <button class="tbtn tbtn-reset" onclick="resetState()">Sıfırla (localStorage)</button>
+    </div>
+    <div class="status-bar" id="status">—</div>
+  </div>
+
+<script>
+/* ── Widget kodunun test versiyonu (saat kısıtı yok) ─────────────────────── */
+var STORAGE_KEY = 'aff_v1';
+var REF_CODE    = 'TESTREF';
+var AFF_URL     = 'https://www.yemeksepeti.com';
+
+function todayKey() {
+  var d = new Date();
+  return d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate();
+}
+function getState() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch(e) { return {}; }
+}
+function setState(obj) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(obj)); } catch(e) {}
+}
+function markSeen(dismissed) {
+  var s = getState(); s[todayKey()] = dismissed ? 'dismissed' : 'closed'; setState(s);
+}
+
+/* ── Banner oluşturucu (widget.js ile birebir aynı) ─────────────────────── */
+function buildBanner() {
+  if (document.getElementById('aff-banner')) return;
+
+  var style = document.createElement('style');
+  style.id = 'aff-style';
+  style.textContent = [
+    '#aff-banner{',
+      'position:fixed;bottom:20px;right:20px;',
+      'width:300px;',
+      'background:#1a1a2e;',
+      'border:1px solid #ff6b35;',
+      'border-radius:12px;',
+      'padding:14px 16px;',
+      'box-shadow:0 4px 24px rgba(0,0,0,.5);',
+      'font-family:system-ui,sans-serif;',
+      'font-size:14px;',
+      'color:#e0e0f0;',
+      'z-index:2147483647;',
+      'animation:aff-slide .35s ease;',
+      'line-height:1.4;',
+    '}',
+    '@keyframes aff-slide{',
+      'from{opacity:0;transform:translateY(16px)}',
+      'to{opacity:1;transform:translateY(0)}',
+    '}',
+    '#aff-banner.aff-hide{animation:aff-fade .3s ease forwards}',
+    '@keyframes aff-fade{to{opacity:0;transform:translateY(12px)}}',
+    '#aff-banner .aff-close{',
+      'position:absolute;top:8px;right:10px;',
+      'background:none;border:none;color:#8080a0;',
+      'font-size:18px;cursor:pointer;line-height:1;padding:0;',
+    '}',
+    '#aff-banner .aff-close:hover{color:#e0e0f0}',
+    '#aff-banner .aff-logo{font-size:11px;color:#ff6b35;font-weight:700;letter-spacing:.5px;margin-bottom:6px}',
+    '#aff-banner .aff-msg{margin-bottom:12px;color:#c0c0d8}',
+    '#aff-banner .aff-btns{display:flex;gap:8px}',
+    '#aff-banner .aff-yes{flex:1;padding:7px;border:none;border-radius:7px;background:#ff6b35;color:#fff;font-size:13px;font-weight:600;cursor:pointer}',
+    '#aff-banner .aff-yes:hover{background:#e55a24}',
+    '#aff-banner .aff-no{flex:1;padding:7px;border:1px solid #3a3a5a;border-radius:7px;background:transparent;color:#8080a0;font-size:13px;cursor:pointer}',
+    '#aff-banner .aff-no:hover{color:#c0c0d0;border-color:#6060a0}',
+  ].join('');
+  document.head.appendChild(style);
+
+  var banner = document.createElement('div');
+  banner.id = 'aff-banner';
+  banner.innerHTML =
+    '<button class="aff-close" aria-label="Kapat">×</button>' +
+    '<div class="aff-logo">🍔 YEMEKSEPETI</div>' +
+    '<div class="aff-msg">Şu an siparişlerde <strong>özel indirimler</strong> var! Hemen göz atmak ister misin?</div>' +
+    '<div class="aff-btns">' +
+      '<button class="aff-yes">Siparişe Git</button>' +
+      '<button class="aff-no">Hayır teşekkürler</button>' +
+    '</div>';
+  document.body.appendChild(banner);
+
+  function dismiss(permanently) {
+    banner.classList.add('aff-hide');
+    markSeen(permanently);
+    setTimeout(function() {
+      if (banner.parentNode) banner.parentNode.removeChild(banner);
+      var s = document.getElementById('aff-style');
+      if (s) s.parentNode.removeChild(s);
+      updateStatus();
+    }, 320);
+  }
+
+  banner.querySelector('.aff-close').addEventListener('click', function() {
+    dismiss(false);
+    setStatus('Kapatıldı (×) — yarın tekrar görünecek.');
+  });
+  banner.querySelector('.aff-no').addEventListener('click', function() {
+    dismiss(true);
+    setStatus('"Hayır teşekkürler" — bugün bir daha çıkmayacak.');
+  });
+  banner.querySelector('.aff-yes').addEventListener('click', function() {
+    markSeen(true);
+    window.open(AFF_URL + '?ref=' + REF_CODE, '_blank', 'noopener');
+    dismiss(true);
+    setStatus('"Siparişe Git" tıklandı — Yemeksepeti açıldı.');
+  });
+
+  updateStatus();
+}
+
+/* ── Test butonları ──────────────────────────────────────────────────────── */
+function showNow() {
+  var existing = document.getElementById('aff-banner');
+  if (existing) { setStatus('Banner zaten açık.'); return; }
+  buildBanner();
+  setStatus('Banner gösteriliyor…');
+}
+
+function resetState() {
+  try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
+  setStatus('localStorage sıfırlandı — artık tekrar gösterebilirsin.');
+}
+
+function setStatus(msg) {
+  document.getElementById('status').textContent = msg;
+}
+
+function updateStatus() {
+  var s = getState();
+  var val = s[todayKey()];
+  if (!val) {
+    setStatus('Durum: bugün henüz gösterilmedi.');
+  } else if (val === 'dismissed') {
+    setStatus('Durum: "Hayır" dendi — bugün çıkmayacak.');
+  } else {
+    setStatus('Durum: kapatıldı (×) — yarın tekrar çıkacak.');
+  }
+}
+
+updateStatus();
+</script>
+
+</body>
+</html>

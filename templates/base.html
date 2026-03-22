@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Oyun Affiliate Platformu{% endblock %}</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #0f0f1a;
+      color: #e0e0f0;
+      min-height: 100vh;
+    }
+
+    /* ── Navbar ── */
+    nav {
+      background: #1a1a2e;
+      border-bottom: 2px solid #ff6b35;
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 60px;
+    }
+    nav .logo {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #ff6b35;
+      text-decoration: none;
+    }
+    nav .nav-links a {
+      color: #b0b0d0;
+      text-decoration: none;
+      margin-left: 1.5rem;
+      font-size: 0.95rem;
+      transition: color .2s;
+    }
+    nav .nav-links a:hover { color: #ff6b35; }
+
+    /* ── Sayfa gövdesi ── */
+    .container {
+      max-width: 960px;
+      margin: 2.5rem auto;
+      padding: 0 1.5rem;
+    }
+
+    /* ── Kart ── */
+    .card {
+      background: #1a1a2e;
+      border: 1px solid #2a2a4a;
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+    }
+    .card h2 {
+      font-size: 1.4rem;
+      color: #ff6b35;
+      margin-bottom: 1.5rem;
+    }
+
+    /* ── Form elemanları ── */
+    .form-group { margin-bottom: 1.2rem; }
+    .form-group label {
+      display: block;
+      margin-bottom: .4rem;
+      font-size: .9rem;
+      color: #a0a0c0;
+    }
+    .form-group input {
+      width: 100%;
+      padding: .7rem 1rem;
+      background: #0f0f1a;
+      border: 1px solid #3a3a5a;
+      border-radius: 8px;
+      color: #e0e0f0;
+      font-size: 1rem;
+      transition: border-color .2s;
+    }
+    .form-group input:focus {
+      outline: none;
+      border-color: #ff6b35;
+    }
+
+    /* ── Butonlar ── */
+    .btn {
+      display: inline-block;
+      padding: .7rem 1.8rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      text-decoration: none;
+      transition: opacity .2s;
+    }
+    .btn:hover { opacity: .85; }
+    .btn-primary   { background: #ff6b35; color: #fff; }
+    .btn-secondary { background: #2a2a4a; color: #e0e0f0; }
+    .btn-danger    { background: #c0392b; color: #fff; }
+    .btn-sm { padding: .4rem 1rem; font-size: .85rem; }
+
+    /* ── İstatistik kartları ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .stat-card {
+      background: #12122a;
+      border: 1px solid #2a2a4a;
+      border-radius: 10px;
+      padding: 1.2rem 1.5rem;
+      text-align: center;
+    }
+    .stat-card .value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #ff6b35;
+    }
+    .stat-card .label {
+      font-size: .85rem;
+      color: #8080a0;
+      margin-top: .3rem;
+    }
+
+    /* ── Tablo ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .9rem;
+    }
+    th, td {
+      padding: .75rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid #2a2a4a;
+    }
+    th { color: #8080a0; font-weight: 600; }
+    tr:hover td { background: #1f1f3a; }
+
+    /* ── Hata / Bilgi ── */
+    .alert {
+      padding: .8rem 1.2rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      font-size: .95rem;
+    }
+    .alert-error   { background: #3a1010; border: 1px solid #c0392b; color: #e07070; }
+    .alert-success { background: #0f3a1a; border: 1px solid #27ae60; color: #70e090; }
+
+    /* ── Affiliate kutusu ── */
+    .link-box {
+      display: flex;
+      align-items: center;
+      gap: .8rem;
+      background: #0f0f1a;
+      border: 1px solid #3a3a5a;
+      border-radius: 8px;
+      padding: .6rem 1rem;
+    }
+    .link-box input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: #a0ffa0;
+      font-family: monospace;
+      font-size: .95rem;
+    }
+    .link-box input:focus { outline: none; }
+
+    /* ── Alt bağlantı ── */
+    .alt-link {
+      text-align: center;
+      margin-top: 1rem;
+      font-size: .9rem;
+      color: #8080a0;
+    }
+    .alt-link a { color: #ff6b35; text-decoration: none; }
+    .alt-link a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="logo" href="/">🎮 AffiliateOyun</a>
+  <div class="nav-links">
+    {% block nav_links %}{% endblock %}
+  </div>
+</nav>
+
+<div class="container">
+  {% block content %}{% endblock %}
+</div>
+
+<script>
+function kopyala(id) {
+  const el = document.getElementById(id);
+  el.select();
+  document.execCommand('copy');
+  const btn = el.parentElement.querySelector('button');
+  btn.textContent = '✓ Kopyalandı';
+  setTimeout(() => btn.textContent = 'Kopyala', 2000);
+}
+</script>
+
+</body>
+</html>

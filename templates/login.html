@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Giriş – AffiliateOyun{% endblock %}
+
+{% block content %}
+<div style="max-width:480px; margin:0 auto;">
+  <div class="card">
+    <h2>🔑 Giriş Yap</h2>
+
+    {% if error %}
+    <div class="alert alert-error">{{ error }}</div>
+    {% endif %}
+
+    <form method="POST">
+      <div class="form-group">
+        <label>Kayıtlı E-posta Adresiniz</label>
+        <input type="email" name="email" placeholder="ornek@email.com" required>
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%;">
+        Giriş Yap
+      </button>
+    </form>
+
+    <div class="alt-link">
+      Henüz kayıt olmadınız mı? <a href="/kayit">Kayıt olun</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}Dashboard – {{ dev['name'] }}{% endblock %}
+
+{% block nav_links %}
+  <a href="/dashboard">Dashboard</a>
+  <a href="/cikis">Çıkış</a>
+{% endblock %}
+
+{% block content %}
+<h1 style="font-size:1.6rem; margin-bottom:1.5rem;">
+  Merhaba, <span style="color:#ff6b35;">{{ dev['name'] }}</span> 👋
+</h1>
+<p style="color:#8080a0; margin-top:-.8rem; margin-bottom:1.5rem;">
+  Oyun: <strong style="color:#c0c0e0;">{{ dev['game_name'] }}</strong>
+</p>
+
+<!-- İstatistikler -->
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="value">{{ clicks }}</div>
+    <div class="label">Toplam Tıklama</div>
+  </div>
+  <div class="stat-card">
+    <div class="value">{{ order_count }}</div>
+    <div class="label">Tamamlanan Sipariş</div>
+  </div>
+  <div class="stat-card">
+    <div class="value">{{ "%.2f"|format(earnings) }} ₺</div>
+    <div class="label">Toplam Kazanç</div>
+  </div>
+  <div class="stat-card">
+    <div class="value">
+      {% if clicks > 0 %}
+        %{{ "%.1f"|format(order_count / clicks * 100) }}
+      {% else %}
+        -%
+      {% endif %}
+    </div>
+    <div class="label">Dönüşüm Oranı</div>
+  </div>
+</div>
+
+<!-- Affiliate Link -->
+<div class="card">
+  <h2>🔗 Affiliate Linkiniz</h2>
+  <p style="color:#8080a0; font-size:.9rem; margin-bottom:1rem;">
+    Bu linki oyununuzda, sosyal medyanızda veya yayınlarınızda paylaşın.
+    Her tıklama takip edilir.
+  </p>
+  <div class="link-box">
+    <input type="text" id="affLink" value="{{ affiliate_link }}" readonly>
+    <button class="btn btn-primary btn-sm" onclick="kopyala('affLink')">Kopyala</button>
+  </div>
+  <p style="color:#606080; font-size:.8rem; margin-top:.7rem;">
+    Referans kodunuz: <code style="color:#ff6b35;">{{ dev['ref_code'] }}</code>
+  </p>
+</div>
+
+<!-- Oyuna Embed -->
+<div class="card" style="border-color:#2a3a4a;">
+  <h2>🧩 Oyununuza / Sitenize Ekleyin</h2>
+  <p style="color:#8080a0; font-size:.9rem; margin-bottom:1.2rem;">
+    Aşağıdaki kodu oyununuzun veya web sitenizin <code style="color:#ff6b35;">&lt;/body&gt;</code>
+    etiketinden hemen önce yapıştırın. Bildirim otomatik çalışır.
+  </p>
+
+  <div class="link-box" style="flex-direction:column; align-items:flex-start; gap:.5rem; padding:1rem;">
+    <div style="display:flex; width:100%; align-items:center; gap:.8rem;">
+      <input type="text" id="embedCode" style="font-family:monospace; font-size:.8rem; color:#a0ffa0;"
+        value='&lt;script src="{{ request.host_url }}static/widget.js" data-ref="{{ dev["ref_code"] }}" data-url="https://www.yemeksepeti.com"&gt;&lt;/script&gt;'
+        readonly>
+      <button class="btn btn-primary btn-sm" onclick="kopyala('embedCode')">Kopyala</button>
+    </div>
+  </div>
+
+  <div style="margin-top:1.2rem; display:grid; grid-template-columns:1fr 1fr; gap:.8rem;">
+    <div style="background:#0f0f1a; border-radius:8px; padding:.9rem 1rem; font-size:.85rem;">
+      <div style="color:#ff6b35; font-weight:600; margin-bottom:.4rem;">⏰ Gösterim Saatleri</div>
+      <div style="color:#a0a0c0;">11:30 – 13:00</div>
+      <div style="color:#a0a0c0;">18:00 – 20:00</div>
+    </div>
+    <div style="background:#0f0f1a; border-radius:8px; padding:.9rem 1rem; font-size:.85rem;">
+      <div style="color:#ff6b35; font-weight:600; margin-bottom:.4rem;">🛡️ Kullanıcı Dostu</div>
+      <div style="color:#a0a0c0;">Günde en fazla 1 kez</div>
+      <div style="color:#a0a0c0;">"Hayır" diyene bugün tekrar çıkmaz</div>
+    </div>
+  </div>
+</div>
+
+<!-- Bilgilendirme -->
+<div class="card" style="border-color:#2a3a2a;">
+  <h2 style="color:#70c070;">💡 Nasıl Çalışır?</h2>
+  <ol style="padding-left:1.2rem; line-height:2; color:#a0c0a0; font-size:.95rem;">
+    <li>Embed kodunu oyununuza ekleyin.</li>
+    <li>Oyuncu belirlenen saatlerde sayfada bulununca sağ alt köşede küçük bir banner çıkar.</li>
+    <li>Oyuncu "Siparişe Git"e tıklarsa Yemeksepeti'ne affiliate linkinizle yönlendirilir.</li>
+    <li>Sipariş tamamlandığında komisyonunuz otomatik hesaplanır.</li>
+  </ol>
+</div>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Kayıt Ol – AffiliateOyun{% endblock %}
+
+{% block content %}
+<div style="max-width:480px; margin:0 auto;">
+  <div class="card">
+    <h2>🎮 Geliştirici Kaydı</h2>
+
+    {% if error %}
+    <div class="alert alert-error">{{ error }}</div>
+    {% endif %}
+
+    <form method="POST">
+      <div class="form-group">
+        <label>Ad Soyad</label>
+        <input type="text" name="name" placeholder="Ahmet Yılmaz" required>
+      </div>
+      <div class="form-group">
+        <label>Oyun Adı</label>
+        <input type="text" name="game_name" placeholder="Oyununuzun adı" required>
+      </div>
+      <div class="form-group">
+        <label>E-posta</label>
+        <input type="email" name="email" placeholder="ornek@email.com" required>
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%;">
+        Kayıt Ol ve Linkimi Al
+      </button>
+    </form>
+
+    <div class="alt-link">
+      Zaten hesabınız var mı? <a href="/giris">Giriş yapın</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
