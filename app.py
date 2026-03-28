@@ -244,5 +244,5 @@ def order_webhook():
 if not os.path.exists(DATABASE):
     init_db()
 
-port = int(os.environ.get('PORT', 8080))
-app.run(host='0.0.0.0', port=port)
+app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
+
