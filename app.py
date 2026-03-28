@@ -8,7 +8,7 @@ app.secret_key = 'gizli-anahtar-degistir'
 
 DATABASE = 'platform.db'
 YEMEKSEPETI_BASE = 'https://www.yemeksepeti.com'
-ADMIN_PASSWORD = 'admin123'  # Gerçek kullanımda değiştir
+ADMIN_PASSWORD = 'admin123'  # Gerçek kullanımda değiştir veya Railway env'den oku
 
 # ── Veritabanı ──────────────────────────────────────────────────────────────
 
@@ -179,6 +179,7 @@ def redirect_affiliate(code):
 
 @app.route('/admin/giris', methods=['GET', 'POST'])
 def admin_login():
+    global ADMIN_PASSWORD
     error = None
     if request.method == 'POST':
         if request.form['password'] == ADMIN_PASSWORD:
@@ -186,6 +187,27 @@ def admin_login():
             return redirect(url_for('admin_panel'))
         error = 'Hatalı şifre.'
     return render_template('admin_login.html', error=error)
+
+@app.route('/admin/sifre-degistir', methods=['GET', 'POST'])
+@admin_required
+def admin_change_password():
+    global ADMIN_PASSWORD
+    error = None
+    success = None
+    if request.method == 'POST':
+        current  = request.form.get('current_password', '')
+        new_pw   = request.form.get('new_password', '').strip()
+        confirm  = request.form.get('confirm_password', '').strip()
+        if current != ADMIN_PASSWORD:
+            error = 'Mevcut şifre hatalı.'
+        elif len(new_pw) < 6:
+            error = 'Yeni şifre en az 6 karakter olmalıdır.'
+        elif new_pw != confirm:
+            error = 'Yeni şifreler eşleşmiyor.'
+        else:
+            ADMIN_PASSWORD = new_pw
+            success = 'Şifre başarıyla güncellendi.'
+    return render_template('admin_change_password.html', error=error, success=success)
 
 @app.route('/admin/cikis')
 def admin_logout():
